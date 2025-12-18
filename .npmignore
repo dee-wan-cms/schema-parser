@@ -1,0 +1,21 @@
+# Source files
+src/
+tests/
+*.spec.ts
+*.test.ts
+
+# Build config
+tsconfig.json
+vitest.config.ts
+
+# Development files
+.git/
+.gitignore
+*.log
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

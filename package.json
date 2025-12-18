@@ -1,0 +1,74 @@
+{
+  "name": "@dee-wan-cms/schema-parser",
+  "version": "0.1.0",
+  "description": "Extract and parse @optimize directives from Prisma schema comments into standardized data structures",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest --coverage",
+    "mutate": "stryker run",
+    "mutate:incremental": "stryker run --incremental",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "prepublishOnly": "npm run build && npm run test",
+    "release": "semantic-release"
+  },
+  "keywords": [
+    "dee-wan-cms",
+    "prisma",
+    "schema",
+    "parser",
+    "optimize",
+    "directive",
+    "query",
+    "sql",
+    "cloudflare",
+    "d1"
+  ],
+  "author": "dee-wan-cms",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dee-wan-cms/schema-parser.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dee-wan-cms/schema-parser/issues"
+  },
+  "homepage": "https://github.com/dee-wan-cms/schema-parser#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@prisma/generator-helper": "^7.2.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@stryker-mutator/core": "^9.4.0",
+    "@stryker-mutator/vitest-runner": "^9.4.0",
+    "@types/node": "^25.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.50.0",
+    "@typescript-eslint/parser": "^8.50.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "eslint": "^9.39.2",
+    "semantic-release": "^25.0.2",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  }
+}
