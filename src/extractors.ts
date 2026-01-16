@@ -20,7 +20,7 @@ import {
   isEmpty,
   hasMinLength 
 } from './utils/guards'
-import { assertArray, assertString, assertFinite, assertInteger } from './utils/validators'
+import { assertArray, assertString } from './utils/validators'
 import { 
   hash32, 
   sanitizeAlphanumeric, 
