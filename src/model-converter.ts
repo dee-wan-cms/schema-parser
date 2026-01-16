@@ -48,7 +48,7 @@ export function convertDMMFToModels(datamodel: DMMF.Datamodel): Model[] {
 
     return {
       name: dmmfModel.name,
-      tableName: dmmfModel.name,
+      tableName: dmmfModel.dbName || dmmfModel.name,
       fields,
     }
   })
