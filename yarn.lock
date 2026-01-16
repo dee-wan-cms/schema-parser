@@ -417,9 +417,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dee-wan-cms/schema-parser@workspace:.":
+"@dee-wan/schema-parser@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@dee-wan-cms/schema-parser@workspace:."
+  resolution: "@dee-wan/schema-parser@workspace:."
   dependencies:
     "@prisma/generator-helper": ^7.2.0
     "@semantic-release/changelog": ^6.0.3
