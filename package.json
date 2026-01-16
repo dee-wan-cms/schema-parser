@@ -7,9 +7,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs",
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/index.js"
     }
   },
   "files": [
@@ -22,7 +22,7 @@
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
-    "coverage": "vitest --coverage",
+    "test:coverage": "vitest --coverage",
     "mutate": "stryker run",
     "mutate:incremental": "stryker run --incremental",
     "typecheck": "tsc --noEmit",
