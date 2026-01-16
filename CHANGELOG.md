@@ -1,3 +1,10 @@
+# 1.0.0 (2026-01-16)
+
+
+### Bug Fixes
+
+* **package.json:** correct the exports field to include types for better compatibility ([e3f09a8](https://github.com/dee-wan-cms/schema-parser/commit/e3f09a8ff2c11d8d81b8739d245239597f5b66f5))
+
 # 1.0.0 (2025-11-28)
 
 
