@@ -1,6 +1,6 @@
 # @dee-wan-cms/schema-parser
 
-A production-ready Prisma schema directive parser that extracts, validates, and transforms query parameters with built-in SQL injection prevention and caching support.
+Prisma schema directive parser that extracts, validates, and transforms query parameters with built-in SQL injection prevention and caching support.
 
 ## Why?
 
