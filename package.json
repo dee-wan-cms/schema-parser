@@ -1,6 +1,6 @@
 {
-  "name": "@dee-wan-cms/schema-parser",
-  "version": "1.0.2",
+  "name": "@dee-wan/schema-parser",
+  "version": "0.0.0",
   "description": "Extract and parse @optimize directives from Prisma schema comments into standardized data structures",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
