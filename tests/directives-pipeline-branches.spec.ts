@@ -4,7 +4,7 @@ import { BLOG_DATAMODEL, POST_MODEL, USER_MODEL, withDoc } from './fixtures'
 
 describe('directives pipeline branches', () => {
   it('processAllDirectives returns only models with directives or errors', () => {
-    const doc = `@optimize {"header":"x","query":{"where":{"status":"active"}}}`
+    const doc = `@optimize {"method":"x","query":{"where":{"status":"active"}}}`
     const models = [
       withDoc(POST_MODEL, doc),
       withDoc(USER_MODEL, ''),
@@ -18,7 +18,7 @@ describe('directives pipeline branches', () => {
   })
 
   it('throws when skipInvalid is false and directive has validation errors', () => {
-    const doc = `@optimize {"header":"bad","query":{"where":{"nonExistent":"x"}}}`
+    const doc = `@optimize {"method":"bad","query":{"where":{"nonExistent":"x"}}}`
     expect(() =>
       processModelDirectives(withDoc(POST_MODEL, doc), BLOG_DATAMODEL as any, {
         skipInvalid: false,

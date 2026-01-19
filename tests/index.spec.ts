@@ -248,7 +248,7 @@ describe('Directive Parsing Robustness', () => {
   it('should handle multiple directives with deeply nested objects', () => {
     const documentation = `
       @optimize {
-        "header": "first",
+        "method": "first",
         "query": {
           "where": {
             "AND": [
@@ -259,7 +259,7 @@ describe('Directive Parsing Robustness', () => {
         }
       }
       @optimize {
-        "header": "second",
+        "method": "second",
         "query": {
           "where": {
             "OR": [
@@ -278,14 +278,14 @@ describe('Directive Parsing Robustness', () => {
     )
 
     expect(result.directives).toHaveLength(2)
-    expect(result.directives[0].header).toBe('first')
-    expect(result.directives[1].header).toBe('second')
+    expect(result.directives[0].method).toBe('first')
+    expect(result.directives[1].method).toBe('second')
   })
 
   it('should skip directive with mismatched braces', () => {
     const documentation = `
-      @optimize { "header": "broken", "query": { "where": { "status": "active" } }
-      @optimize { "header": "valid", "query": { "where": { "id": 1 } } }
+      @optimize { "method": "broken", "query": { "where": { "status": "active" } }
+      @optimize { "method": "valid", "query": { "where": { "id": 1 } } }
     `
 
     const result = processModelDirectives(
@@ -295,13 +295,13 @@ describe('Directive Parsing Robustness', () => {
     )
 
     expect(result.directives).toHaveLength(1)
-    expect(result.directives[0].header).toBe('valid')
+    expect(result.directives[0].method).toBe('valid')
   })
 
   it('should handle directives with string values containing braces', () => {
     const documentation = `
     @optimize {
-      "header": "withBraces",
+      "method": "withBraces",
       "query": {
         "where": {
           "title": "Test { with } braces"
@@ -324,8 +324,8 @@ describe('Directive Parsing Robustness', () => {
 
   it('should skip directive with invalid JSON', () => {
     const documentation = `
-      @optimize { header: "broken", query: { invalid } }
-      @optimize { "header": "valid", "query": { "where": { "status": "active" } } }
+      @optimize { method: "broken", query: { invalid } }
+      @optimize { "method": "valid", "query": { "where": { "status": "active" } } }
     `
 
     const result = processModelDirectives(
@@ -335,6 +335,6 @@ describe('Directive Parsing Robustness', () => {
     )
 
     expect(result.directives).toHaveLength(1)
-    expect(result.directives[0].header).toBe('valid')
+    expect(result.directives[0].method).toBe('valid')
   })
 })

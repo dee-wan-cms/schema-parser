@@ -87,7 +87,7 @@ function processDirective(
   const cache = parseCacheConfig(raw.cache, config.defaultCacheTtl)
 
   const directive: DirectiveProps = {
-    header: raw.header,
+    method: raw.method,
     modelName: model.name,
     query: queryResult.result,
     parameters: organizeParameters(queryResult.parameters),

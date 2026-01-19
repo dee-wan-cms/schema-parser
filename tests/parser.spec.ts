@@ -41,9 +41,9 @@ describe('JSON Extraction', () => {
 
 describe('Directive Extraction', () => {
   it('extracts directives at various positions', () => {
-    expect(extractDirectives('@optimize { "header": "x", "query": {} }')).toHaveLength(1)
-    expect(extractDirectives('text\n@optimize { "header": "x", "query": {} }')).toHaveLength(1)
-    expect(extractDirectives('@optimize {"header":"a","query":{}} @optimize {"header":"b","query":{}}')).toHaveLength(2)
+    expect(extractDirectives('@optimize { "method": "x", "query": {} }')).toHaveLength(1)
+    expect(extractDirectives('text\n@optimize { "method": "x", "query": {} }')).toHaveLength(1)
+    expect(extractDirectives('@optimize {"method":"a","query":{}} @optimize {"method":"b","query":{}}')).toHaveLength(2)
   })
 
   it.each([
@@ -57,18 +57,18 @@ describe('Directive Extraction', () => {
   })
 
   it('tracks line numbers', () => {
-    expect(extractDirectives('line1\n@optimize { "header": "x", "query": {} }')[0].line).toBe(2)
+    expect(extractDirectives('line1\n@optimize { "method": "x", "query": {} }')[0].line).toBe(2)
   })
 })
 
 describe('Directive Validation', () => {
   const invalidCases: [string, string][] = [
-    ['{ "query": {} }', 'header'],
-    ['{ "header": "   ", "query": {} }', 'empty'],
-    ['{ "header": "x" }', 'query'],
-    ['{ "header": 123, "query": {} }', 'invalid'],
-    ['{ "header": null, "query": {} }', 'invalid'],
-    ['{ "header": "x", "query": "string" }', 'invalid'],
+    ['{ "query": {} }', 'method'],
+    ['{ "method": "   ", "query": {} }', 'empty'],
+    ['{ "method": "x" }', 'query'],
+    ['{ "method": 123, "query": {} }', 'invalid'],
+    ['{ "method": null, "query": {} }', 'invalid'],
+    ['{ "method": "x", "query": "string" }', 'invalid'],
     ['{ invalid }', 'JSON'],
   ]
 
@@ -79,10 +79,10 @@ describe('Directive Validation', () => {
   })
 
   it('accepts valid formats', () => {
-    const valid = parseDirectiveJson('{ "header": "test", "query": { "where": {} } }')
+    const valid = parseDirectiveJson('{ "method": "test", "query": { "where": {} } }')
     expect(valid.success).toBe(true)
     
-    const withArgs = parseDirectiveJson('{ "header": "x", "args": { "a": 1 } }')
+    const withArgs = parseDirectiveJson('{ "method": "x", "args": { "a": 1 } }')
     expect(withArgs.success).toBe(true)
     if (withArgs.success) expect(withArgs.data.query).toEqual({ a: 1 })
   })
@@ -90,7 +90,7 @@ describe('Directive Validation', () => {
   it('collects errors separately', () => {
     const { directives, errors } = parseDirectives(`
       @optimize { invalid }
-      @optimize { "header": "ok", "query": {} }
+      @optimize { "method": "ok", "query": {} }
     `)
     expect(directives).toHaveLength(1)
     expect(errors).toHaveLength(1)

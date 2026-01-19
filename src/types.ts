@@ -8,7 +8,7 @@ export interface RawDirective {
 }
 
 export interface RawDirectiveJSON {
-  header: string
+  method: string
   query: Record<string, unknown>
   cache?: CacheDirective
 }
@@ -47,7 +47,7 @@ export interface CacheConfig {
 }
 
 export interface DirectiveProps {
-  header: string
+  method: string
   modelName: string
   query: ProcessedQuery
   parameters: ParameterSet
@@ -104,7 +104,7 @@ export function validateParamMap(mapping: ParamMap): void {
 }
 
 export interface ParsedOptimization {
-  header: string
+  method: string
   query: Record<string, unknown>
   cache?: { ttl: number } | boolean
   sql: string

@@ -1,6 +1,6 @@
 # @dee-wan-cms/schema-parser
 
-Prisma schema directive parser that extracts, validates, and transforms query parameters with built-in SQL injection prevention and caching support.
+Prisma schema directive parser that extracts, validates, and transforms query parameters with built-in SQL injection prevention.
 
 ## Why?
 
@@ -14,14 +14,13 @@ model Post {
   views     Int
 
   /// @optimize {
-  ///   "header": "getActivePostsByMinViews",
+  ///   "method": "findMany",
   ///   "query": {
   ///     "where": {
   ///       "status": "$status",
   ///       "views": { "gte": "$minViews" }
   ///     }
-  ///   },
-  ///   "cache": { "ttl": 300 }
+  ///   }
   /// }
 }
 ```
@@ -44,14 +43,12 @@ const dmmf = await getDMMF({ datamodel: schemaString });
 const model = dmmf.datamodel.models.find((m) => m.name === 'Post');
 
 const result = processModelDirectives(model, dmmf.datamodel, {
-  defaultCacheTtl: 300,
   skipInvalid: true,
 });
 
 result.directives.forEach((directive) => {
-  console.log('Header:', directive.header);
+  console.log('Method:', directive.method);
   console.log('Parameters:', directive.parameters.all);
-  console.log('Cache TTL:', directive.cache.ttl);
 });
 ```
 
@@ -94,23 +91,6 @@ const { params, processedQuery } = extractParamsFromQuery(query, model);
 // }
 ```
 
-### ⚡ **Cache Configuration**
-
-```typescript
-import { parseCacheConfig } from '@dee-wan-cms/schema-parser';
-
-// Simple enable/disable
-parseCacheConfig(true, 300); // → { enabled: true, ttl: 300 }
-parseCacheConfig(false, 300); // → { enabled: false }
-
-// Custom TTL
-parseCacheConfig({ ttl: 600 }, 300); // → { enabled: true, ttl: 600 }
-
-// With binding
-parseCacheConfig({ ttl: 600, binding: 'CACHE' }, 300);
-// → { enabled: true, ttl: 600, binding: 'CACHE' }
-```
-
 ### ✅ **Field Validation**
 
 Validates that referenced fields exist on the model:
@@ -137,7 +117,6 @@ Main entry point. Parses all directives from a model's documentation.
 - `model: DMMF.Model` - Prisma model from DMMF
 - `datamodel: DMMF.Datamodel` - Full datamodel for validation
 - `config?: DirectivePipelineConfig`
-  - `defaultCacheTtl: number` - Default cache TTL (1-31536000 seconds)
   - `skipInvalid: boolean` - Skip invalid directives vs throw (default: `true`)
 
 **Returns:** `ModelDirectiveResult`
@@ -147,7 +126,6 @@ Main entry point. Parses all directives from a model's documentation.
   modelName: string
   directives: DirectiveProps[]
   errors: DirectiveError[]
-  hasCaching: boolean
 }
 ```
 
@@ -155,7 +133,6 @@ Main entry point. Parses all directives from a model's documentation.
 
 ```typescript
 const result = processModelDirectives(model, datamodel, {
-  defaultCacheTtl: 600,
   skipInvalid: false, // Throw on validation errors
 });
 ```
@@ -208,26 +185,14 @@ sanitizeParamName('123abc'); // 'param_123abc'
 sanitizeParamName('DROP_TABLE_users'); // 'users' (keywords stripped)
 ```
 
-### `parseCacheConfig(directive, defaultTtl)`
-
-Parse cache configuration with validation.
-
-**TTL Constraints:**
-
-- Min: 1 second
-- Max: 31,536,000 seconds (1 year)
-- Must be integer
-- Invalid values fall back to `defaultTtl`
-
 ### Type Definitions
 
 ```typescript
 interface DirectiveProps {
-  header: string;
+  method: string;
   modelName: string;
   query: ProcessedQuery;
   parameters: ParameterSet;
-  cache: CacheConfig;
   context: {
     model: DMMF.Model;
     datamodel: DMMF.Datamodel;
@@ -244,12 +209,6 @@ interface ParameterDefinition {
   required: boolean;
   position: number; // 1-indexed
 }
-
-interface CacheConfig {
-  enabled: boolean;
-  ttl?: number;
-  binding?: string;
-}
 ```
 
 ## Advanced Usage
@@ -258,7 +217,7 @@ interface CacheConfig {
 
 ```prisma
 /// @optimize {
-///   "header": "searchPosts",
+///   "method": "findMany",
 ///   "query": {
 ///     "where": {
 ///       "AND": [
@@ -405,19 +364,6 @@ if (result.errors.length > 0) {
 
 ## Configuration
 
-### Cache TTL Validation
-
-```typescript
-import { CACHE_TTL } from '@dee-wan-cms/schema-parser';
-
-console.log(CACHE_TTL);
-// {
-//   MIN: 1,              // 1 second
-//   MAX: 31536000,       // 1 year
-//   DEFAULT: 300         // 5 minutes
-// }
-```
-
 ### Error Handling Modes
 
 ```typescript
@@ -426,7 +372,7 @@ const lenient = processModelDirectives(model, datamodel, {
   skipInvalid: true,
 });
 console.log(
-  `Parsed ${lenient.directives.length}, errors: ${lenient.errors.length}`
+  `Parsed ${lenient.directives.length}, errors: ${lenient.errors.length}`,
 );
 
 // Strict: Throw on first error
@@ -445,7 +391,7 @@ try {
 
 ```prisma
 /// @optimize {
-///   "header": "listPosts",
+///   "method": "findMany",
 ///   "query": {
 ///     "take": "$limit",
 ///     "skip": "$offset",
@@ -458,7 +404,7 @@ try {
 
 ```prisma
 /// @optimize {
-///   "header": "getPostsByAuthor",
+///   "method": "findMany",
 ///   "query": {
 ///     "where": {
 ///       "author": {
@@ -470,21 +416,60 @@ try {
 /// }
 ```
 
-### Multiple Cache Strategies
+### Single Record Lookup
 
 ```prisma
-/// Short cache for volatile data
 /// @optimize {
-///   "header": "getRealtimeStats",
-///   "query": { "where": { "live": true } },
-///   "cache": { "ttl": 10 }
+///   "method": "findUnique",
+///   "query": {
+///     "where": {
+///       "id": "$postId"
+///     }
+///   }
 /// }
+```
 
-/// Long cache for stable data
+### Conditional Filtering
+
+```prisma
 /// @optimize {
-///   "header": "getArchivedPosts",
-///   "query": { "where": { "archived": true } },
-///   "cache": { "ttl": 3600 }
+///   "method": "findFirst",
+///   "query": {
+///     "where": {
+///       "status": "$status",
+///       "publishedAt": { "lte": "$maxDate" }
+///     },
+///     "orderBy": { "publishedAt": "desc" }
+///   }
+/// }
+```
+
+### Counting Records
+
+```prisma
+/// @optimize {
+///   "method": "count",
+///   "query": {
+///     "where": {
+///       "archived": false,
+///       "views": { "gte": "$minViews" }
+///     }
+///   }
+/// }
+```
+
+### Aggregation
+
+```prisma
+/// @optimize {
+///   "method": "aggregate",
+///   "query": {
+///     "where": {
+///       "status": "$status"
+///     },
+///     "_sum": { "views": true },
+///     "_avg": { "views": true }
+///   }
 /// }
 ```
 
@@ -522,10 +507,6 @@ const organized = organizeParameters(params);
 ### "Field 'X' does not exist on model"
 
 The directive references a field not in your Prisma model. Check spelling and model definition.
-
-### "Invalid TTL: must be integer between 1 and 31536000"
-
-Cache TTL is out of range or not an integer. Use values between 1 second and 1 year.
 
 ### "Missing required parameters"
 

@@ -3,8 +3,8 @@ import type { DMMF } from '@prisma/generator-helper'
 import { processModelDirectives } from '../src/directives'
 import type { MINIMAL_DATAMODEL, POST_MODEL } from './fixtures'
 
-export const directive = (header: string, query: object, cache?: unknown) =>
-  `@optimize ${JSON.stringify({ header, query, cache })}`
+export const directive = (method: string, query: object, cache?: unknown) =>
+  `@optimize ${JSON.stringify({ method, query, cache })}`
 
 export const testDirective = (
   model: typeof POST_MODEL,

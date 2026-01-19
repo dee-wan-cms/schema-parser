@@ -5,7 +5,7 @@ describe('parser comment-cleaning', () => {
   it('parses directive JSON where lines are prefixed with ///', () => {
     const documentation = `
 @optimize {
-/// "header": "ok",
+/// "method": "ok",
 /// "query": { "where": { "status": "active" } }
 }
     `
@@ -13,7 +13,7 @@ describe('parser comment-cleaning', () => {
     expect(errors).toHaveLength(0)
     expect(directives).toHaveLength(1)
     expect(directives[0]).toMatchObject({
-      header: 'ok',
+      method: 'ok',
       query: { where: { status: 'active' } },
     })
   })

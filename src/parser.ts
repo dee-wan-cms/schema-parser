@@ -128,18 +128,18 @@ export function parseDirectiveJson(
       }
     }
 
-    const hasValidHeader = parsed.header && typeof parsed.header === 'string'
-    if (!hasValidHeader) {
+    const hasValidmethod = parsed.method && typeof parsed.method === 'string'
+    if (!hasValidmethod) {
       return {
         success: false,
-        error: { message: 'Missing or invalid "header" field', level: 'error', line, raw },
+        error: { message: 'Missing or invalid "method" field', level: 'error', line, raw },
       }
     }
 
-    if (isEmpty(parsed.header.trim())) {
+    if (isEmpty(parsed.method.trim())) {
       return {
         success: false,
-        error: { message: 'Header cannot be empty', level: 'error', line, raw },
+        error: { message: 'method cannot be empty', level: 'error', line, raw },
       }
     }
 
@@ -159,7 +159,7 @@ export function parseDirectiveJson(
 
     return {
       success: true,
-      data: { header: parsed.header, query: queryField, cache: parsed.cache },
+      data: { method: parsed.method, query: queryField, cache: parsed.cache },
     }
   } catch (err) {
     return {

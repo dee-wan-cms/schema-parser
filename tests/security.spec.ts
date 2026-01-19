@@ -40,7 +40,7 @@ describe('SQL Injection Prevention', () => {
   })
 
   it('prevents injection in directives', () => {
-    const doc = `@optimize {"header":"t","query":{"where":{"status":"$DROP_TABLE"}}}`
+    const doc = `@optimize {"method":"t","query":{"where":{"status":"$DROP_TABLE"}}}`
     const result = testDirective(POST_MODEL, MINIMAL_DATAMODEL, doc)
     const param = result.directives[0]?.parameters.all[0]
     expect(param?.name).not.toContain('DROP')

@@ -39,7 +39,7 @@ describe('Directive Processing', () => {
 
     expect(directives).toHaveLength(1)
     expect(directives[0]).toMatchObject({
-      header: 'test',
+      method: 'test',
       modelName: 'Post',
       cache: { enabled: true, ttl: 600 },
     })
@@ -65,7 +65,7 @@ describe('Directive Processing', () => {
       ${directive('b', { where: { status: 'y' } })}
     `
     const { directives } = processModelDirectives(withDoc(POST_MODEL, multi), MINIMAL_DATAMODEL)
-    expect(directives.map((d) => d.header)).toEqual(['a', 'b'])
+    expect(directives.map((d) => d.method)).toEqual(['a', 'b'])
 
     const invalid = `
       @optimize { invalid json }
@@ -102,6 +102,6 @@ describe('getDirectiveProps', () => {
     const doc = directive('x', { where: { status: 'y' } })
     const props = getDirectiveProps(withDoc(POST_MODEL, doc), MINIMAL_DATAMODEL)
     expect(props).toHaveLength(1)
-    expect(props[0].header).toBe('x')
+    expect(props[0].method).toBe('x')
   })
 })
