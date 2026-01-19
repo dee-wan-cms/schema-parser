@@ -32,14 +32,38 @@ export function convertDMMFToModels(datamodel: DMMF.Datamodel): Model[] {
           field.relationFromFields && field.relationFromFields.length > 0,
         )
 
+        let foreignKey = fk
+        let references = refs
+
+        if (!isFkLocal && field.relationName) {
+          const relatedModel = datamodel.models.find(
+            (m) => m.name === String(field.type),
+          )
+
+          if (relatedModel) {
+            const inverseField = relatedModel.fields.find(
+              (f) =>
+                f.kind === 'object' &&
+                f.relationName === field.relationName &&
+                f.relationFromFields &&
+                f.relationFromFields.length > 0,
+            )
+
+            if (inverseField) {
+              foreignKey = inverseField.relationFromFields?.[0]
+              references = inverseField.relationToFields?.[0]
+            }
+          }
+        }
+
         fields.push({
           name: field.name,
           type: encodeType(String(field.type), Boolean(field.isList)),
           isRequired: field.isRequired,
           isRelation: true,
           relatedModel: String(field.type),
-          foreignKey: fk,
-          references: refs,
+          foreignKey,
+          references,
           relationName: field.relationName,
           isForeignKeyLocal: isFkLocal,
         })
