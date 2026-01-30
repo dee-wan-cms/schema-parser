@@ -10,9 +10,10 @@ export function convertDMMFToModels(datamodel: DMMF.Datamodel): Model[] {
     const fields: Field[] = []
 
     for (const field of dmmfModel.fields) {
-      if (field.kind === 'scalar') {
+      if (field.kind === 'scalar' || field.kind === 'enum') {
         fields.push({
           name: field.name,
+          dbName: field.dbName ?? field.name,
           type: encodeType(String(field.type), Boolean(field.isList)),
           isRequired: field.isRequired,
           isRelation: false,
@@ -58,6 +59,7 @@ export function convertDMMFToModels(datamodel: DMMF.Datamodel): Model[] {
 
         fields.push({
           name: field.name,
+          dbName: field.name,
           type: encodeType(String(field.type), Boolean(field.isList)),
           isRequired: field.isRequired,
           isRelation: true,

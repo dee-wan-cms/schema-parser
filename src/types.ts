@@ -131,6 +131,7 @@ export interface ExtractedParams {
 
 export interface Field {
   name: string
+  dbName: string
   type: string
   isRequired: boolean
   isRelation: boolean
