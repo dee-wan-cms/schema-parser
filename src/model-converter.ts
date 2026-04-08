@@ -5,6 +5,14 @@ function encodeType(baseType: string, isList: boolean): string {
   return isList ? `${baseType}[]` : baseType
 }
 
+function toMutableKeys(
+  fields: readonly string[] | undefined,
+): string | string[] | undefined {
+  if (!fields || fields.length === 0) return undefined
+  if (fields.length === 1) return fields[0]
+  return [...fields]
+}
+
 export function convertDMMFToModels(datamodel: DMMF.Datamodel): Model[] {
   return datamodel.models.map((dmmfModel) => {
     const fields: Field[] = []
@@ -15,6 +23,7 @@ export function convertDMMFToModels(datamodel: DMMF.Datamodel): Model[] {
           name: field.name,
           dbName: field.dbName ?? field.name,
           type: encodeType(String(field.type), Boolean(field.isList)),
+          isId: Boolean(field.isId),
           isRequired: field.isRequired,
           isRelation: false,
           relatedModel: undefined,
@@ -27,16 +36,17 @@ export function convertDMMFToModels(datamodel: DMMF.Datamodel): Model[] {
       }
 
       if (field.kind === 'object') {
-        const fk = field.relationFromFields?.[0]
-        const refs = field.relationToFields?.[0]
-        const isFkLocal = Boolean(
-          field.relationFromFields && field.relationFromFields.length > 0,
-        )
+        const fromFields = field.relationFromFields ?? []
+        const toFields = field.relationToFields ?? []
+        const isFkLocal = fromFields.length > 0
 
-        let foreignKey = fk
-        let references = refs
+        let foreignKey: string | string[] | undefined
+        let references: string | string[] | undefined
 
-        if (!isFkLocal && field.relationName) {
+        if (isFkLocal) {
+          foreignKey = toMutableKeys(fromFields)
+          references = toMutableKeys(toFields)
+        } else if (field.relationName) {
           const relatedModel = datamodel.models.find(
             (m) => m.name === String(field.type),
           )
@@ -51,8 +61,8 @@ export function convertDMMFToModels(datamodel: DMMF.Datamodel): Model[] {
             )
 
             if (inverseField) {
-              foreignKey = inverseField.relationFromFields?.[0]
-              references = inverseField.relationToFields?.[0]
+              foreignKey = toMutableKeys(inverseField.relationFromFields)
+              references = toMutableKeys(inverseField.relationToFields)
             }
           }
         }
@@ -72,10 +82,17 @@ export function convertDMMFToModels(datamodel: DMMF.Datamodel): Model[] {
       }
     }
 
+    const compositePk = dmmfModel.primaryKey?.fields
+    const primaryKey =
+      Array.isArray(compositePk) && compositePk.length > 0
+        ? { fields: compositePk.map(String) }
+        : undefined
+
     return {
       name: dmmfModel.name,
       tableName: dmmfModel.dbName || dmmfModel.name,
       fields,
+      primaryKey,
     }
   })
 }

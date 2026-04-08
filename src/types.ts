@@ -1,4 +1,3 @@
-// src/types.ts
 import type { DMMF } from '@prisma/generator-helper'
 
 export interface RawDirective {
@@ -131,14 +130,15 @@ export interface ExtractedParams {
 
 export interface Field {
   name: string
-  dbName: string
+  dbName?: string
   type: string
+  isId?: boolean
   isRequired: boolean
   isRelation: boolean
   relatedModel?: string
   relationName?: string
-  foreignKey?: string
-  references?: string
+  foreignKey?: string | string[]
+  references?: string | string[]
   isForeignKeyLocal?: boolean
 }
 
@@ -146,4 +146,5 @@ export interface Model {
   name: string
   tableName: string
   fields: Field[]
+  primaryKey?: { fields: string[] }
 }
